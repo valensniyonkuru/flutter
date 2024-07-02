@@ -9,6 +9,9 @@ class CalculatorPage extends StatefulWidget {
 class _CalculatorPageState extends State<CalculatorPage> {
   String _expression = '';
   String _result = '';
+  final ScrollController _expressionScrollController = ScrollController();
+  final ScrollController _resultScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
 
   void _onButtonPressed(String buttonText) {
     setState(() {
@@ -29,6 +32,10 @@ class _CalculatorPageState extends State<CalculatorPage> {
         _expression += buttonText;
       }
     });
+
+    // Scroll to end of the expression
+    _expressionScrollController
+        .jumpTo(_expressionScrollController.position.maxScrollExtent);
   }
 
   bool _isOperator(String buttonText) {
@@ -88,8 +95,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: SingleChildScrollView(
-                    reverse: true,
+                    controller: _expressionScrollController,
                     scrollDirection: Axis.horizontal,
+                    reverse: true,
                     child: Text(
                       _expression,
                       style: TextStyle(fontSize: 24, color: Colors.white),
@@ -110,8 +118,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: SingleChildScrollView(
-                    reverse: true,
+                    controller: _resultScrollController,
                     scrollDirection: Axis.horizontal,
+                    reverse: true,
                     child: Text(
                       _result,
                       style: TextStyle(
@@ -126,15 +135,22 @@ class _CalculatorPageState extends State<CalculatorPage> {
             SizedBox(height: 20),
             Expanded(
               flex: 6,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButtonRow(['(', ')', 'C', '÷']),
-                  buildButtonRow(['7', '8', '9', '×']),
-                  buildButtonRow(['4', '5', '6', '-']),
-                  buildButtonRow(['1', '2', '3', '+']),
-                  buildButtonRow(['0', '.', '=', '%']),
-                ],
+              child: Scrollbar(
+                radius: Radius.circular(8.0),
+                controller: _mainScrollController,
+                child: SingleChildScrollView(
+                  controller: _mainScrollController,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      buildButtonRow(['(', ')', 'C', '÷']),
+                      buildButtonRow(['7', '8', '9', '×']),
+                      buildButtonRow(['4', '5', '6', '-']),
+                      buildButtonRow(['1', '2', '3', '+']),
+                      buildButtonRow(['0', '.', '=', '%']),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
